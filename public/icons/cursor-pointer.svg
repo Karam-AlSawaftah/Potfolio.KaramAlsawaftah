@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="curp" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#aef0ff"/>
+      <stop offset="1" stop-color="#00d4ff"/>
+    </linearGradient>
+  </defs>
+  <path d="M9 1 V11 M9 1 L9 11 M6 9 V21 M6 9 C6 9 6 8 7 8 C8 8 8 9 8 9 V14 M8 9 C8 9 8 8 9 8 C10 8 10 9 10 9 V14 M10 9 C10 9 10 8 11 8 C12 8 12 9 12 9 V14 M12 9 C12 9 12 8 13 8 C14 8 14 9 14 10 V16 C14 19 12 21 9 21 H8 C6 21 4.5 19.5 4 18 L2 13 C1.7 12.2 2.3 11 3.3 11.3 C4 11.5 4.5 12.5 4.5 12.5 L6 15" fill="url(#curp)" stroke="#0a2a6e" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

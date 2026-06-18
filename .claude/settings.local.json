@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__visualize__show_widget",
+      "Bash(npm --version)",
+      "Bash(npm -v)",
+      "Bash(npm view *)"
+    ]
+  }
+}

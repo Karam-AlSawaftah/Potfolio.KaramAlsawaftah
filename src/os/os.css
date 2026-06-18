@@ -1,0 +1,670 @@
+/* ── os.css ───────────────────────────────────────────────────────────────────
+   All XP OS shell styles — everything under src/os/.
+   Covers: .desktop, .desktop-icon, .taskbar, .taskbar__start,
+           .taskbar__window-btn, .start-menu-xp, .shutdown-dialog,
+           .custom-cursor, .clippy-*, .desktop-ctx-menu
+   Window chrome (.window-chrome, .window-titlebar, etc.) lives in chrome-ui.css.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.desktop {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #3A6EA5;
+  overflow: hidden;
+}
+
+.desktop__icons {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  bottom: 46px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px;
+  z-index: 1;
+}
+
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 84px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 8px 4px;
+  cursor: none;
+  color: var(--text-on-cobalt);
+}
+
+.desktop-icon:hover,
+.desktop-icon:focus-visible {
+  background: rgba(10, 73, 173, 0.35);
+  border-color: rgba(150, 190, 255, 0.6);
+  box-shadow: none;
+}
+
+.desktop-icon--selected {
+  background: rgba(10, 73, 173, 0.55);
+  border: 1px dotted rgba(200, 220, 255, 0.9);
+}
+
+.desktop-icon img {
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.desktop-icon span {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0;
+}
+
+/* ---- Taskbar (XP Luna) ---- */
+.taskbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  /* XP taskbar: medium blue gradient top-to-bottom */
+  background: linear-gradient(180deg,
+    #2e68c8 0%,
+    #1e54b8 8%,
+    #1248ac 50%,
+    #1248ac 92%,
+    #1e54b8 100%
+  );
+  border-top: 1px solid #0a38a0;
+  z-index: 5000;
+  overflow: visible;
+}
+
+/* single-pixel bright highlight at very top */
+.taskbar::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}
+
+/* XP green Start button — taller than taskbar, overflows top */
+.taskbar__start {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 12px 0 8px;
+  height: 36px;       /* taller than the 30px taskbar */
+  margin-top: -6px;   /* overflow upward */
+  font-family: "Trebuchet MS", var(--font-ui);
+  font-weight: bold;
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 50, 0, 0.8);
+  background: linear-gradient(180deg,
+    #76c060 0%,
+    #54a840 6%,
+    #2e9020 50%,
+    #2a8c1c 94%,
+    #58b448 100%
+  );
+  border: 1px solid #1a6e0e;
+  border-top-color: #8ad870;
+  border-radius: 0 0 10px 10px; /* XP start button: rounded bottom corners */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    1px 0 3px rgba(0,0,0,0.4);
+  flex-shrink: 0;
+  cursor: none;
+  position: relative;
+  z-index: 1;
+}
+
+.taskbar__start img {
+  width: 18px;
+  height: 18px;
+  image-rendering: pixelated;
+}
+
+.taskbar__divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(80, 120, 200, 0.6);
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+.taskbar__windows {
+  flex: 1;
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  min-width: 0;
+  padding: 2px 4px;
+  align-items: center;
+}
+
+/* XP taskbar window buttons: raised 3D look */
+.taskbar__window-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 5px;
+  height: 22px;
+  background: linear-gradient(180deg,
+    #5090e0 0%,
+    #3070c8 30%,
+    #1858b8 70%,
+    #2868c4 100%
+  );
+  border: 1px solid;
+  border-color: #6aacf0 #0a246a #0a246a #6aacf0;  /* XP 3D bevel */
+  border-radius: 3px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    inset 1px 0 0 rgba(255,255,255,0.2);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 0, 80, 0.7);
+  cursor: none;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+/* Active (focused) window button: sunken / pressed */
+.taskbar__window-btn.active {
+  background: linear-gradient(180deg,
+    #1848a0 0%,
+    #1038a0 50%,
+    #1848a8 100%
+  );
+  border-color: #0a246a #6aacf0 #6aacf0 #0a246a;  /* reversed bevel = sunken */
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 80, 0.5);
+}
+
+.taskbar__window-btn img {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* XP system tray: slightly inset area on far right */
+.taskbar__clock {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 0, 80, 0.6);
+  padding: 0 8px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  /* Slightly darker/inset than the main taskbar */
+  background: linear-gradient(180deg,
+    #1650a8 0%,
+    #1040a0 50%,
+    #1448a8 100%
+  );
+  border-left: 1px solid rgba(255,255,255,0.2);
+  box-shadow: inset 1px 0 0 rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+
+/* ---- Custom cursor ---- */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  will-change: transform;
+  image-rendering: pixelated;
+}
+
+.custom-cursor img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---- XP Start Menu (two-pane) ---- */
+.start-menu-xp {
+  position: absolute;
+  left: 0;
+  bottom: 30px;
+  width: 360px;
+  z-index: 6000;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.55), 0 -2px 8px rgba(0,0,0,0.4);
+  border: 1px solid #0a246a;
+  border-bottom: none;
+}
+
+.start-menu-xp__header {
+  background: linear-gradient(to bottom,
+    #3a6ea5 0%,
+    #0a246a 100%
+  );
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid #3a6ea5;
+}
+
+.start-menu-xp__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #a6caf0 0%, #3a6ea5 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Trebuchet MS", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  border: 2px solid rgba(255,255,255,0.5);
+  flex-shrink: 0;
+}
+
+.start-menu-xp__username {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: bold;
+  font-size: 13px;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,40,0.7);
+}
+
+.start-menu-xp__body {
+  display: flex;
+  height: 210px;
+}
+
+.start-menu-xp__left {
+  width: 52%;
+  background: #fff;
+  border-right: 1px solid #aabfdc;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  overflow-y: auto;
+}
+
+.start-menu-xp__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: bold;
+  color: #000;
+  cursor: none;
+}
+
+.start-menu-xp__item:hover {
+  background: #316ac5;
+  color: #fff;
+}
+
+.start-menu-xp__item:hover .win-icon {
+  filter: brightness(10);
+}
+
+.start-menu-xp__item-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-menu-xp__separator {
+  height: 1px;
+  background: #d0d0d0;
+  margin: 4px 12px;
+}
+
+.start-menu-xp__right {
+  flex: 1;
+  background: #d9e8f8;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  border-left: 1px solid #aabfdc;
+}
+
+.start-menu-xp__place {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: #00206a;
+  cursor: none;
+}
+
+.start-menu-xp__place:hover {
+  background: #316ac5;
+  color: #fff;
+}
+
+.start-menu-xp__place-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
+
+.start-menu-xp__footer {
+  background: linear-gradient(to bottom, #1e5ab0 0%, #0a246a 100%);
+  padding: 7px 12px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-top: 2px solid #3a6ea5;
+}
+
+.start-menu-xp__turnoff {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  background: linear-gradient(to bottom, #6090d0 0%, #2060a0 50%, #1050a0 100%);
+  border: 1px solid #0a2468;
+  border-top-color: #6090d0;
+  border-radius: 3px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  cursor: none;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 1px 1px 2px rgba(0,0,0,0.4);
+}
+
+.start-menu-xp__turnoff:hover {
+  filter: brightness(1.1);
+}
+
+/* ---- Shutdown Dialog ---- */
+.shutdown-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 8000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shutdown-dialog {
+  background: #ece9d8;
+  border: 2px solid #0a246a;
+  border-radius: 8px;
+  box-shadow: 4px 4px 16px rgba(0,0,0,0.6);
+  overflow: hidden;
+  width: 320px;
+}
+
+.shutdown-dialog__header {
+  background: linear-gradient(to right, #0a246a, #3a6ea5, #a6caf0);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: bold;
+  font-size: 13px;
+  color: #fff;
+  text-shadow: 1px 1px 1px rgba(0,0,80,0.6);
+}
+
+.shutdown-dialog__logo {
+  width: 22px;
+  height: 22px;
+  image-rendering: pixelated;
+}
+
+.shutdown-dialog__body {
+  padding: 20px;
+}
+
+.shutdown-dialog__btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.shutdown-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: linear-gradient(to bottom, #f5f2ec, #d8d4c8);
+  border: 1px solid #8e8170;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: none;
+  min-width: 72px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.shutdown-btn:hover {
+  background: linear-gradient(to bottom, #fff, #ede9da);
+  border-color: #316ac5;
+}
+
+.shutdown-btn--primary {
+  border-color: #316ac5;
+  background: linear-gradient(to bottom, #d0e4f8, #a0c0e8);
+}
+
+.shutdown-btn__icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.shutdown-btn__label {
+  font-weight: bold;
+  color: #000;
+}
+
+.shutdown-dialog__footer {
+  padding: 8px 16px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #c0b8a8;
+  background: #ece9d8;
+}
+
+.shutdown-dialog__cancel {
+  padding: 4px 20px;
+  background: linear-gradient(to bottom, #f5f2ec, #d8d4c8);
+  border: 1px solid #8e8170;
+  border-radius: 3px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+.shutdown-dialog__cancel:hover {
+  background: linear-gradient(to bottom, #fff, #ede9da);
+  border-color: #316ac5;
+}
+
+/* ---- Clippy ---- */
+.clippy-wrapper {
+  position: fixed;
+  bottom: 34px;
+  right: 20px;
+  z-index: 5500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.clippy-wrapper--hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+.clippy-sprite {
+  cursor: none;
+  animation-fill-mode: forwards;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  background-image: var(--clippy-bg);
+}
+
+@keyframes clippy-roll {
+  to { background-position-x: var(--clippy-sheet-w); }
+}
+
+.clippy-bubble {
+  background: #fffde7;
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: #111;
+  max-width: 180px;
+  line-height: 1.5;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+  cursor: none;
+  position: relative;
+}
+
+.clippy-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  right: 24px;
+  border: 5px solid transparent;
+  border-top-color: #333;
+}
+
+.clippy-bubble::before {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  right: 25px;
+  border: 4px solid transparent;
+  border-top-color: #fffde7;
+  z-index: 1;
+}
+
+.clippy-dismiss {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  background: #c00;
+  color: #fff;
+  border: 1px solid #800;
+  border-radius: 50%;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+  cursor: none;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.clippy-wrapper:hover .clippy-dismiss {
+  opacity: 1;
+}
+
+/* ---- Desktop context menu ---- */
+.desktop-ctx-menu {
+  position: fixed;
+  z-index: 6500;
+  min-width: 180px;
+  background: var(--chrome-100);
+  border: 1px solid var(--chrome-600);
+  border-radius: var(--radius-button);
+  box-shadow: var(--shadow-window);
+  padding: 4px 0;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  overflow: hidden;
+}
+
+.desktop-ctx-menu__label {
+  padding: 4px 12px 2px;
+  font-size: 10px;
+  color: var(--chrome-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--chrome-300);
+  margin-bottom: 2px;
+}
+
+.desktop-ctx-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  color: var(--text-on-chrome);
+  cursor: none;
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+
+.desktop-ctx-menu__item:hover {
+  background: var(--cobalt-700);
+  color: #fff;
+}
+
+.desktop-ctx-menu__item--active {
+  font-weight: bold;
+}

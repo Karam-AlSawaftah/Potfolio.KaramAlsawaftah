@@ -1,0 +1,79 @@
+/* ── global.css ───────────────────────────────────────────────────────────────
+   Entry point for all shared styles. Import order matters:
+     1. tokens.css   — CSS variables (colors, fonts, z-layers)
+     2. chrome-ui.css — XP window chrome, buttons, progress bar
+     3. This file    — resets, @font-face, body defaults
+   Each app / OS component has its own colocated .css file for private styles.
+   ─────────────────────────────────────────────────────────────────────────── */
+@import "./tokens.css";
+@import "./chrome-ui.css";
+
+@font-face {
+  font-family: "Tahoma";
+  src: url("/fonts/tahoma.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Framdit";
+  src: url("/fonts/framdit.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text-on-cobalt);
+  overflow: hidden;
+  cursor: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea {
+  font-family: var(--font-body);
+}
+
+a {
+  color: var(--cyan-300);
+}
+
+::selection {
+  background: var(--cyan-400);
+  color: var(--cobalt-950);
+}
+
+/* Thin chrome scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--chrome-500) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--chrome-500);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}

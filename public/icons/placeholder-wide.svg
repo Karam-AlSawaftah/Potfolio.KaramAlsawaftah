@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+  <rect width="320" height="180" fill="#0a2a6e"/>
+  <rect x="1" y="1" width="318" height="178" fill="none" stroke="#00d4ff" stroke-width="1" stroke-dasharray="6 4"/>
+  <path d="M0 180 L120 70 L180 130 L320 30 L320 180 Z" fill="#123a8c"/>
+  <circle cx="250" cy="40" r="18" fill="none" stroke="#5fe8ff" stroke-width="2"/>
+  <text x="160" y="95" font-family="monospace" font-size="14" fill="#5fe8ff" text-anchor="middle">PREVIEW PENDING</text>
+</svg>

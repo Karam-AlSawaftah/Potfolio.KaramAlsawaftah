@@ -1,0 +1,151 @@
+.system-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: "Tahoma", var(--font-ui);
+  font-size: 12px;
+  color: #000;
+  background: #ece9d8;
+}
+
+.system-app__header {
+  background: linear-gradient(to right, #0a246a, #3a6ea5, #a6caf0);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+}
+
+.system-app__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+
+.system-app__logo-mark {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.system-app__logo-name {
+  font-family: var(--font-framdit, "Trebuchet MS", sans-serif);
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.system-app__logo-sub {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.system-app__body {
+  flex: 1;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.system-app__section {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.system-app__label {
+  width: 90px;
+  flex-shrink: 0;
+  font-weight: bold;
+  color: #444;
+  padding-top: 1px;
+}
+
+.system-app__value {
+  flex: 1;
+  line-height: 1.6;
+  color: #111;
+}
+
+.system-app__dim {
+  color: #666;
+  font-size: 11px;
+}
+
+.system-app__specs {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.system-app__specs td {
+  padding: 1px 8px 1px 0;
+  vertical-align: top;
+}
+
+.system-app__specs td:first-child {
+  font-weight: bold;
+  color: #444;
+  width: 70px;
+  white-space: nowrap;
+}
+
+.system-app__divider {
+  height: 1px;
+  background: #c0b8a8;
+  margin: 2px 0;
+}
+
+.system-app__footer {
+  padding: 8px 12px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #c0b8a8;
+  background: #ece9d8;
+}
+
+.system-app__btn {
+  padding: 3px 20px;
+  background: linear-gradient(to bottom, #f5f2ec, #ddd8c8);
+  border: 1px solid #8e8170;
+  border-radius: 3px;
+  font-family: "Tahoma", sans-serif;
+  font-size: 12px;
+  cursor: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+.system-app__btn:hover {
+  background: linear-gradient(to bottom, #fff, #e8e4d8);
+}
+
+.system-app__btn:active {
+  background: linear-gradient(to bottom, #ddd8c8, #f0ece0);
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Recycle Bin variant */
+.system-app--recycle {
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+}
+
+.system-app__recycle-icon {
+  font-size: 48px;
+  line-height: 1;
+  filter: grayscale(0.3);
+}
+
+.system-app__recycle-msg {
+  font-size: 13px;
+  font-weight: bold;
+  color: #222;
+}
+
+.system-app__recycle-sub {
+  font-size: 11px;
+  color: #888;
+}

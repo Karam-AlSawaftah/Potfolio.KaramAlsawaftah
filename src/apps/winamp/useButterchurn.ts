@@ -2,7 +2,7 @@ import { useRef, useEffect, useCallback, useState } from "react";
 import type { RefObject } from "react";
 import _butterchurnLib from "butterchurn";
 import _butterchurnPresets from "butterchurn-presets";
-import type { ButterchurnVisualizer } from "../../types/butterchurn";
+import type { ButterchurnVisualizer } from "butterchurn";
 
 // butterchurn's CJS bundle exports { default: Visualizer }.
 // Handle both Vite interop patterns: unwrapped (Visualizer) or wrapped ({ default: Visualizer }).

@@ -67,7 +67,7 @@ export default function Clippy({ size = 64 }: ClippyProps) {
   const sheetH = 240 * scale;
   const duration = frames / 24;
 
-  const src = `/clip/clip%20(${encodeURIComponent(anim)})_sheet.png`;
+  const src = `${import.meta.env.BASE_URL}clip/clip%20(${encodeURIComponent(anim)})_sheet.png`;
 
   return (
     <div className={`clippy-wrapper${visible ? "" : " clippy-wrapper--hidden"}`}>

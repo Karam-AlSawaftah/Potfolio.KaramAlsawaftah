@@ -47,7 +47,7 @@ export default function Desktop() {
   }, []);
 
   const desktopBg: React.CSSProperties = wallpaper
-    ? { backgroundImage: `url(/wallpapers/${wallpaper})`, backgroundSize: "cover", backgroundPosition: "center" }
+    ? { backgroundImage: `url(${import.meta.env.BASE_URL}wallpapers/${wallpaper})`, backgroundSize: "cover", backgroundPosition: "center" }
     : { background: "#3A6EA5" };
 
   return (

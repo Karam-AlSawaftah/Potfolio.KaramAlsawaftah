@@ -2,11 +2,12 @@ import { useEffect, useRef } from "react";
 
 type CursorType = "default" | "pointer" | "text" | "move";
 
+const BASE = import.meta.env.BASE_URL;
 const CURSOR_SRCS: Record<CursorType, string> = {
-  default: "/icons/cursor-default.png",
-  pointer: "/icons/cursor-pointer.png",
-  text:    "/icons/default_ibeam.png",
-  move:    "/icons/default_move.png",
+  default: `${BASE}icons/cursor-default.png`,
+  pointer: `${BASE}icons/cursor-pointer.png`,
+  text:    `${BASE}icons/default_ibeam.png`,
+  move:    `${BASE}icons/default_move.png`,
 };
 
 export default function CustomCursor() {

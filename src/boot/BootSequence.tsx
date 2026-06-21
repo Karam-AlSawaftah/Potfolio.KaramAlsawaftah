@@ -10,7 +10,7 @@ interface BootSequenceProps {
 }
 
 export default function BootSequence({ onDone }: BootSequenceProps) {
-  const { phase, progress, skipBoot } = useBootSequence(false);
+  const { phase, skipBoot } = useBootSequence(false);
 
   useEffect(() => {
     if (phase === "done") {

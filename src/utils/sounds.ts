@@ -13,16 +13,17 @@ type SoundName =
   | "notify"
   | "startup";
 
+const BASE = import.meta.env.BASE_URL;
 const SOUND_MAP: Record<SoundName, string> = {
-  restore:     "/sounds/restore.wav",
-  minimize:    "/sounds/minimize.wav",
-  menuCommand: "/sounds/menu-command.wav",
-  balloon:     "/sounds/balloon.wav",
-  ding:        "/sounds/ding.wav",
-  error:       "/sounds/error.wav",
-  logon:       "/sounds/logon.wav",
-  notify:      "/sounds/notify.wav",
-  startup:     "/sounds/startup.wav",
+  restore:     `${BASE}sounds/restore.wav`,
+  minimize:    `${BASE}sounds/minimize.wav`,
+  menuCommand: `${BASE}sounds/menu-command.wav`,
+  balloon:     `${BASE}sounds/balloon.wav`,
+  ding:        `${BASE}sounds/ding.wav`,
+  error:       `${BASE}sounds/error.wav`,
+  logon:       `${BASE}sounds/logon.wav`,
+  notify:      `${BASE}sounds/notify.wav`,
+  startup:     `${BASE}sounds/startup.wav`,
 };
 
 const cache: Partial<Record<SoundName, HTMLAudioElement>> = {};

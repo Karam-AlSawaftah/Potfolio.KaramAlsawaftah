@@ -22,7 +22,7 @@ export default function ShutdownDialog({ onClose }: Props) {
     <div className="shutdown-overlay">
       <div className="shutdown-dialog">
         <div className="shutdown-dialog__header">
-          <img src="/icons/winxp-logo.png" alt="Windows XP" className="shutdown-dialog__logo" />
+          <img src={`${import.meta.env.BASE_URL}icons/winxp-logo.png`} alt="Windows XP" className="shutdown-dialog__logo" />
           <span>Turn off computer</span>
         </div>
         <div className="shutdown-dialog__body">

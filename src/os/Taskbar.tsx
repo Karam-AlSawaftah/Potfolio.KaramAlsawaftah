@@ -24,7 +24,7 @@ export default function Taskbar() {
       {startOpen && <StartMenu onClose={() => setStartOpen(false)} />}
       <div className="taskbar">
         <button className="taskbar__start" onClick={() => setStartOpen((v) => !v)}>
-          <img src="/icons/winxp-logo.png" alt="" />
+          <img src={`${import.meta.env.BASE_URL}icons/winxp-logo.png`} alt="" />
           start
         </button>
         <div className="taskbar__divider" />

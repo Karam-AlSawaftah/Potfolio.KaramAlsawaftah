@@ -20,10 +20,12 @@ import MyComputerApp from "../../apps/system/MyComputerApp";
 import RecycleBinApp from "../../apps/system/RecycleBinApp";
 import WinampApp from "../../apps/winamp/WinampApp";
 
+const B = import.meta.env.BASE_URL;
+
 export const windowRegistry: Record<AppId, WindowRegistryEntry> = {
   home: {
     title: "WELCOME.SYS",
-    icon: "/icons/icon-home.svg",
+    icon: `${B}icons/icon-home.svg`,
     winIcon: { row: 21, col: 0 },
     defaultSize: { width: 460, height: 460 },
     defaultPosition: { x: 160, y: 60 },
@@ -33,7 +35,7 @@ export const windowRegistry: Record<AppId, WindowRegistryEntry> = {
   },
   projects: {
     title: "PROJECTS",
-    icon: "/icons/icon-projects.svg",
+    icon: `${B}icons/icon-projects.svg`,
     winIcon: { row: 20, col: 0 },
     defaultSize: { width: 500, height: 380 },
     defaultPosition: { x: 260, y: 110 },
@@ -43,7 +45,7 @@ export const windowRegistry: Record<AppId, WindowRegistryEntry> = {
   },
   about: {
     title: "ABOUT.TXT - Notepad",
-    icon: "/icons/icon-about.svg",
+    icon: `${B}icons/icon-about.svg`,
     winIcon: { row: 13, col: 0 },
     defaultSize: { width: 460, height: 460 },
     defaultPosition: { x: 300, y: 90 },
@@ -53,7 +55,7 @@ export const windowRegistry: Record<AppId, WindowRegistryEntry> = {
   },
   contact: {
     title: "CONTACT.LNK",
-    icon: "/icons/icon-contact.svg",
+    icon: `${B}icons/icon-contact.svg`,
     winIcon: { row: 19, col: 0 },
     defaultSize: { width: 380, height: 360 },
     defaultPosition: { x: 340, y: 140 },
@@ -64,7 +66,7 @@ export const windowRegistry: Record<AppId, WindowRegistryEntry> = {
   "project-detail": {
     // Opened programmatically by ProjectsApp — no desktop icon or Start Menu entry.
     title: "PROJECT",
-    icon: "/icons/icon-project-detail.svg",
+    icon: `${B}icons/icon-project-detail.svg`,
     winIcon: { row: 0, col: 5 },
     defaultSize: { width: 460, height: 520 },
     defaultPosition: { x: 220, y: 70 },
@@ -92,7 +94,7 @@ export const windowRegistry: Record<AppId, WindowRegistryEntry> = {
   },
   winamp: {
     title: "BUTTERCHURN.VIZ",
-    icon: "/icons/icon-home.svg",
+    icon: `${B}icons/icon-home.svg`,
     winIcon: { row: 7, col: 4 },
     defaultSize: { width: 560, height: 480 },
     defaultPosition: { x: 120, y: 60 },

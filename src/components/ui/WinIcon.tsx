@@ -14,7 +14,7 @@ export default function WinIcon({ row, col, size = 32, className }: WinIconProps
       style={{
         width: size,
         height: size,
-        backgroundImage: "url(/icons/winicons32.png)",
+        backgroundImage: `url(${import.meta.env.BASE_URL}icons/winicons32.png)`,
         backgroundPosition: `-${col * 32 * scale}px -${row * 32 * scale}px`,
         backgroundSize: `${736 * scale}px ${704 * scale}px`,
         imageRendering: "pixelated",

@@ -60,7 +60,7 @@ export default function DesktopContextMenu({ x, y, current, onSelect, onClose }:
           {wp.file && (
             <div style={{
               width: 24, height: 16, flexShrink: 0,
-              backgroundImage: `url(/wallpapers/${wp.file})`,
+              backgroundImage: `url(${import.meta.env.BASE_URL}wallpapers/${wp.file})`,
               backgroundSize: "cover", backgroundPosition: "center",
               border: "1px solid rgba(255,255,255,0.3)",
               borderRadius: 2,

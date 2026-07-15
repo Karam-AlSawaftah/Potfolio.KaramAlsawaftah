@@ -111,6 +111,7 @@ const PROJECTS = [
     badge: "VR",
     title: "Beyond the Bones",
     role: "Gameplay Programming · Audio Design · QA",
+    image: "public/Images/BEYOND_THE_BONES_4.png",
     timeframe: "Meta Quest 3 / 3S",
     summary:
       "An educational VR experience developed with the Senckenberg Naturmuseum Frankfurt that teaches visitors how paleontologists analyze fossils. Players step into the role of a researcher investigating the Psittacosaurus mongoliensis specimen, using research tools to reconstruct and understand the prehistoric creature.",
@@ -126,6 +127,10 @@ const PROJECTS = [
         url: "https://ricci-42.itch.io/beyond-the-bones",
       },
     ],
+     media: [
+       { type: "image",   src: "public/Images/BeyondTheBones_1.png", alt: "The fossil lab" },
+       { type: "youtube", url: "https://youtu.be/2Bncz7aFX3M?si=HvEyDO2P55zTwhNN", title: "Trailer" },
+     ],
   },
   {
     id: "spatschlucht-ar",
@@ -148,6 +153,7 @@ const PROJECTS = [
     badge: "MR",
     title: "Mixed Reality Pong",
     role: "MR Developer",
+    image: "public/Images/MR_Pong.png",
     summary:
       "A mixed reality pong game exploring interactive MR mechanics and spatial gameplay. The classic arcade formula is rebuilt around the player's real room — walls, furniture and physical space become part of the playfield.",
     highlights: [
@@ -156,6 +162,25 @@ const PROJECTS = [
     ],
     tech: ["Unity", "Mixed Reality", "Passthrough", "OpenXR"],
     links: [],
+  },
+   {
+    id: "ARVI",
+    category: "university",
+    badge: "MR",
+    title: "ARVI — Autonomus Robotic Virtual Intelligence",
+    image: "public/Images/ARVI.jpg",
+    role: "MR Developer",
+    summary:
+      "A mixed reality AI companion, built for our Sixth semester project, that interacts with the user in their physical space. The project explores how AI can be integrated into the identity of the AVRD course, creating a virtual friend that responds to the user's environment and actions. Answering questions, providing information, and engaging in playful interactions, the AI companion enhances the user's experience of mixed reality.",
+    highlights: [
+      "Brought AI into mixed reality, creating a virtual companion that interacts with the user in their physical space",
+      "made use of passthrough and spatial awareness to create a more immersive and interactive experience",
+    ],
+    tech: ["Unity", "Mixed Reality", "Passthrough", "OpenXR"],
+    links: [],
+    media: [
+      { type: "image",   src: "public/Images/ARVI.jpg", alt: "ARVI Poster" },
+    ],
   },
   {
     id: "vr-roguelike-whack-a-mole",

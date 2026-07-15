@@ -4,7 +4,13 @@
       "mcp__visualize__show_widget",
       "Bash(npm --version)",
       "Bash(npm -v)",
-      "Bash(npm view *)"
+      "Bash(npm view *)",
+      "WebFetch(domain:ricci-42.itch.io)",
+      "WebFetch(domain:www.go360.cz)",
+      "Bash(ls -t ~/Downloads/*.pdf 2>/dev/null | head -20; ls -t ~/Desktop/*.pdf 2>/dev/null | head -10; ls -t ~/Documents/*.pdf 2>/dev/null | head -10)",
+      "Bash(python -c \"import pypdfium2; print\\('pypdfium2 ok'\\)\")",
+      "Bash(pip install *)",
+      "Bash(python -)"
     ]
   }
 }

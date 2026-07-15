@@ -2,18 +2,140 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Karam Alsawaftah — XR Developer</title>
+    <meta
+      name="description"
+      content="Portfolio of Karam Alsawaftah, XR Developer — immersive VR, AR and MR experiences, real-time rendering and technical art."
+    />
+    <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;700&family=VT323&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-    <title>Portfolio OS // Chrome &amp; Cobalt</title>
+    <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- ================= HEADER ================= -->
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="#top"><span id="brand-name"></span><span class="brand-dot">.</span></a>
+        <span class="header-tag">Portfolio <span class="tag-dash"></span></span>
+        <button id="nav-toggle" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+        <nav id="site-nav" class="site-nav">
+          <a href="#about">About</a>
+          <a href="#projects">Projects</a>
+          <a href="#experience">Experience</a>
+          <a href="#background">Background</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- ================= HERO ================= -->
+      <section class="hero">
+        <div class="wrap">
+          <p class="hero-kicker" id="hero-role"></p>
+          <h1 id="hero-name"></h1>
+          <p class="hero-tagline" id="hero-tagline"></p>
+          <p class="hero-meta" id="hero-location"></p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#projects">View Projects</a>
+            <span id="hero-links" class="hero-actions" style="margin-top: 0"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ABOUT ================= -->
+      <section class="block" id="about">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="kicker">About</p>
+            <h2>Who I Am</h2>
+          </div>
+          <p class="about-text" id="about-summary"></p>
+        </div>
+      </section>
+
+      <!-- ================= PROJECTS ================= -->
+      <section class="block" id="projects">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="kicker">Work</p>
+            <h2>Projects</h2>
+            <p class="section-sub">
+              Selected work across commercial, university and personal projects — jump to a category below.
+            </p>
+          </div>
+          <div id="category-pills" class="category-pills"></div>
+          <div id="project-groups"></div>
+        </div>
+      </section>
+
+      <!-- ================= EXPERIENCE ================= -->
+      <section class="block" id="experience">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="kicker">Experience</p>
+            <h2>Where I've Worked</h2>
+          </div>
+          <div id="experience-list"></div>
+        </div>
+      </section>
+
+      <!-- ================= EDUCATION / SKILLS / LANGUAGES ================= -->
+      <section class="block" id="background">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="kicker">Background</p>
+            <h2>Education, Skills &amp; Languages</h2>
+          </div>
+          <div class="info-grid">
+            <div class="info-col">
+              <h2>Education</h2>
+              <div id="education-list"></div>
+            </div>
+            <div class="info-col">
+              <h2>Skills</h2>
+              <div id="skills-list"></div>
+            </div>
+            <div class="info-col">
+              <h2>Languages</h2>
+              <div id="languages-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CONTACT ================= -->
+      <section class="block" id="contact">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="kicker">Contact</p>
+            <h2>Let's Create Together</h2>
+          </div>
+          <div class="contact-card">
+            <div class="contact-info">
+              <a id="contact-email" href="#"></a>
+              <span id="contact-phone"></span>
+              <span id="contact-address"></span>
+            </div>
+            <a class="btn btn-primary" id="contact-cta" href="mailto:Karamali3050@gmail.com">Get in Touch</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="site-footer wrap">
+      <span id="footer-name"></span>
+      <span>Built with plain HTML, CSS &amp; JS — content lives in <code>js/data.js</code></span>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>

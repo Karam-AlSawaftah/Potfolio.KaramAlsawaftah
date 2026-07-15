@@ -21,7 +21,7 @@ const SITE = {
   links: [
     { label: "Email", url: "mailto:Karamali3050@gmail.com" },
     { label: "GitHub", url: "https://github.com/KaramAlsawaftah" },
-    { label: "itch.io", url: "https://ricci-42.itch.io/beyond-the-bones" },
+    { label: "itch.io", url: "https://karam-alsawaftah.itch.io/" },
   ],
 };
 

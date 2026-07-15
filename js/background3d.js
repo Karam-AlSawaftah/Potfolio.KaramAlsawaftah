@@ -23,6 +23,8 @@ const CONFIG = {
   restitution: 0.8, // bounciness of collisions
   mouseRadius: 3.4, // world-space reach of the cursor push
   mouseForce: 30,
+  textForce: 3, // strength of the push away from text/content areas (soft — ducks still drift across sometimes)
+  textMargin: 46, // px halo around each content rect where the push applies
   scrollForce: 0.012, // how hard scrolling drags the flock
   maxSpeed: 7,
   spin: 0.5, // ambient tumbling torque
@@ -57,11 +59,6 @@ if (reducedMotion) {
 
 /* ---------- stage ---------- */
 
-const container = document.createElement("div");
-container.id = "bg3d";
-container.setAttribute("aria-hidden", "true");
-document.body.prepend(container);
-
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x0c0d11, 14, 30);
 
@@ -72,27 +69,46 @@ const safeAspect = () => (innerHeight > 0 && innerWidth > 0 ? innerWidth / inner
 const camera = new THREE.PerspectiveCamera(50, safeAspect(), 0.1, 60);
 camera.position.set(0, 0, CAM_Z);
 
-const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-renderer.setClearColor(0x000000, 0); // transparent — page glows show through
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setSize(innerWidth, innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-container.appendChild(renderer.domElement);
+// Two stacked canvases sharing one scene + camera: the back one sits behind
+// the page (z-index -1), the front one above the frosted panels (z-index 40).
+// Three.js layers decide which ducks each canvas draws — that's what lets some
+// ducks float in front of the content while the rest stay behind it.
+function makeLayer(id, zIndex) {
+  const c = document.createElement("div");
+  c.id = id;
+  c.setAttribute("aria-hidden", "true");
+  c.style.zIndex = zIndex;
+  document.body.prepend(c);
+  const r = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  r.setClearColor(0x000000, 0); // transparent — page glows show through
+  r.setPixelRatio(Math.min(devicePixelRatio, 2));
+  r.setSize(innerWidth, innerHeight);
+  r.toneMapping = THREE.ACESFilmicToneMapping;
+  c.appendChild(r.domElement);
+  return r;
+}
+const BACK_LAYER = 0;
+const FRONT_LAYER = 1;
+const backRenderer = makeLayer("bg3d-back", "-1");
+const frontRenderer = makeLayer("bg3d-front", "40");
 
 /* image-based environment lighting so PBR/metallic materials in the
    model read correctly (a metalness-1 material is black without this) */
-const pmrem = new THREE.PMREMGenerator(renderer);
+const pmrem = new THREE.PMREMGenerator(backRenderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
 /* near-neutral lights — let the model's own texture colors show,
-   with just a hint of the site's warm/red mood */
-scene.add(new THREE.AmbientLight(0xfff6e0, 0.35));
+   with just a hint of the site's warm/red mood.
+   enableAll() so they light ducks on both the back and front layers. */
+const ambient = new THREE.AmbientLight(0xfff6e0, 0.35);
+scene.add(ambient);
 const key = new THREE.DirectionalLight(0xffffff, 1.2);
 key.position.set(6, 8, 10);
 scene.add(key);
 const rim = new THREE.DirectionalLight(0xd84433, 0.5);
 rim.position.set(-8, -4, -6);
 scene.add(rim);
+[ambient, key, rim].forEach((l) => l.layers.enableAll());
 
 /* ---------- the duck ---------- */
 
@@ -224,6 +240,12 @@ for (let i = 0; i < CONFIG.duckCount; i++) {
     bobSpeed: rand(0.6, 1.2),
     wanderSeed: rand(0, 100),
   };
+
+  // The ducks nearest the camera render on the front canvas (above the
+  // frosted panels); the rest stay on the back canvas behind the page.
+  const onFront = duck.position.z > -1.5;
+  duck.traverse((o) => o.layers.set(onFront ? FRONT_LAYER : BACK_LAYER));
+
   ducks.push(duck);
   scene.add(duck);
 }
@@ -251,8 +273,58 @@ addEventListener("scroll", () => {
 addEventListener("resize", () => {
   camera.aspect = safeAspect();
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+  backRenderer.setSize(innerWidth, innerHeight);
+  frontRenderer.setSize(innerWidth, innerHeight);
 });
+
+/* ---------- text / content avoidance ----------
+   Keep the ducks off the readable areas of the page. We project each duck to
+   screen pixels and push it out of any content rectangle — the same idea as
+   the cursor push, but done in 2D screen space against the DOM layout. */
+const AVOID_SELECTOR = [
+  ".hero-inner", ".about-text", ".section-head", ".group-head",
+  ".project-card", ".xp-item", ".edu-item", ".skill-group",
+  ".lang-item", ".contact-card",
+].join(",");
+const avoidNodes = [...document.querySelectorAll(AVOID_SELECTOR)];
+let avoidRects = [];
+function refreshAvoidRects() {
+  avoidRects = avoidNodes.map((n) => n.getBoundingClientRect());
+}
+
+const _proj = new THREE.Vector3();
+function avoidText(duck, dt) {
+  const d = duck.userData;
+  _proj.copy(duck.position).project(camera); // world -> normalized device coords
+  const sx = (_proj.x * 0.5 + 0.5) * innerWidth;
+  const sy = (-_proj.y * 0.5 + 0.5) * innerHeight;
+  const m = CONFIG.textMargin;
+
+  for (const r of avoidRects) {
+    // closest point on the rect to the duck's screen position
+    const cx = Math.max(r.left, Math.min(sx, r.right));
+    const cy = Math.max(r.top, Math.min(sy, r.bottom));
+    const dx = sx - cx;
+    const dy = sy - cy;
+    const dist = Math.hypot(dx, dy); // 0 when the duck is over the rect
+    if (dist >= m) continue;
+
+    let nx, ny;
+    if (dist < 0.5) {
+      // over the rect — shove out the nearest edge
+      const l = sx - r.left, rr = r.right - sx, t = sy - r.top, b = r.bottom - sy;
+      if (Math.min(l, rr) < Math.min(t, b)) { nx = l < rr ? -1 : 1; ny = 0; }
+      else { nx = 0; ny = t < b ? -1 : 1; }
+    } else {
+      nx = dx / dist;
+      ny = dy / dist;
+    }
+    const falloff = 1 - dist / m;
+    const f = CONFIG.textForce * falloff * falloff * dt;
+    d.vel.x += nx * f; // screen +x        -> world +x
+    d.vel.y += -ny * f; // screen +y (down) -> world -y
+  }
+}
 
 /* ---------- physics ---------- */
 
@@ -304,6 +376,9 @@ function applyForces(duck, t, dt) {
 
   // scroll drag
   d.vel.y += scrollImpulse;
+
+  // steer away from text / content areas
+  avoidText(duck, dt);
 
   // water drag + speed cap
   d.vel.multiplyScalar(Math.max(0, 1 - CONFIG.damping * dt));
@@ -392,6 +467,8 @@ function tick() {
   const dt = Math.min(clock.getDelta(), 0.05); // clamp: no physics explosions after tab-switch
   const t = clock.getElapsedTime();
 
+  refreshAvoidRects(); // current viewport-relative rects (they move as you scroll)
+
   for (const duck of ducks) {
     applyForces(duck, t, dt);
     duck.position.addScaledVector(duck.userData.vel, dt);
@@ -418,14 +495,24 @@ function tick() {
   camera.position.y += (mouseNDC.y * CONFIG.parallax - camera.position.y) * 0.03;
   camera.lookAt(0, 0, 0);
 
-  renderer.render(scene, camera);
+  // draw each layer to its own canvas: back ducks behind the page, front
+  // ducks above the frosted panels
+  camera.layers.set(BACK_LAYER);
+  backRenderer.render(scene, camera);
+  camera.layers.set(FRONT_LAYER);
+  frontRenderer.render(scene, camera);
+
   requestAnimationFrame(tick);
 }
 
 // Draw one frame immediately so the ducks are on screen from the start,
 // then hand over to the animation loop.
-renderer.render(scene, camera);
+refreshAvoidRects();
+camera.layers.set(BACK_LAYER);
+backRenderer.render(scene, camera);
+camera.layers.set(FRONT_LAYER);
+frontRenderer.render(scene, camera);
 tick();
 
 // debug handle (harmless in production)
-window.__bg3d = { scene, camera, renderer, ducks, CONFIG };
+window.__bg3d = { scene, camera, backRenderer, frontRenderer, ducks, CONFIG };

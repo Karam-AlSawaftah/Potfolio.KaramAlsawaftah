@@ -61,6 +61,20 @@ const CATEGORIES = [
      highlights bullet points of your contributions
      tech       list of tools/tech shown as chips
      links      external links (article, store page, company ...)
+     media      images & videos shown in the detail popup that opens when the
+                card is clicked. Optional — omit it and the popup just shows text.
+
+   MEDIA — an array of items, each one of these shapes:
+     { type: "image",   src: "public/Images/my-project/shot1.jpg", alt: "…" }
+     { type: "video",   src: "public/videos/my-project/clip.mp4", poster: "…" }  // local file
+     { type: "youtube", url: "https://youtu.be/VIDEO_ID", title: "…" }           // or id: "VIDEO_ID"
+   Put local images under public/Images/… and local videos under public/videos/…
+   (paths are relative to the site root, same style as the rest of the site).
+   Example:
+     media: [
+       { type: "image",   src: "public/Images/beyond-the-bones/lab.jpg", alt: "The fossil lab" },
+       { type: "youtube", url: "https://youtu.be/dQw4w9WgXcQ", title: "Gameplay trailer" },
+     ],
    ------------------------------------------------------------ */
 const PROJECTS = [
   {
@@ -70,6 +84,7 @@ const PROJECTS = [
     title: "The Blu: Expedition Taiwan",
     role: "Technical Artist — Go360",
     timeframe: "2025 — 2026",
+    image: "public/Images/Wevr_TheBlu-Dolphin.webp",
     summary:
       "A large-scale free-roam VR experience that immerses visitors in Taiwan's underwater world. Guests physically walk through the venue in headsets, exploring coral reefs, shipwrecks and the deep ocean — guided by an AI robot, BT-11, on a mission to protect endangered white dolphins. Co-produced by VIVERSE, Wevr and Taiwan's Ministry of Culture, showing at VIVELAND VR Theme Park in Kaohsiung.",
     highlights: [
@@ -80,11 +95,15 @@ const PROJECTS = [
     tech: ["Unity", "Shaders", "3D Modeling", "Rigging", "Free-Roam VR"],
     links: [
       {
-        label: "Read the VIVERSE article",
-        url: "https://news.viverse.com/post/the-blu-expedition-taiwan-free-roam-vr-experience",
+        label: "Project Announcement",
+        url: "https://wevr.com/highlights/wevr-launches-the-blu-expedition-taiwan",
       },
       { label: "Go360 Studio", url: "https://www.go360.cz/" },
     ],
+    media: [
+       { type: "image",   src: "public/Images/Wevr_TheBlu-lab.webp", alt: "Dive Lab" },
+       { type: "youtube", url: "https://youtu.be/dK7bl96GGmE?si=4XTELTsHOHCLQuyp", title: "Trailer" },
+     ],
   },
   {
     id: "beyond-the-bones",

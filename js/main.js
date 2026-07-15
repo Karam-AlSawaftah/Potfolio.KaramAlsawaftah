@@ -33,6 +33,185 @@
     return art;
   }
 
+  /* ---------- project detail modal ---------- */
+
+  // Pull the 11-char video id out of any common YouTube URL (or accept a bare id).
+  function youtubeId(input) {
+    if (!input) return "";
+    if (/^[\w-]{11}$/.test(input)) return input;
+    const m = String(input).match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([\w-]{11})/);
+    return m ? m[1] : "";
+  }
+
+  // Build the media gallery for a project. Returns true if anything was added.
+  function renderMedia(container, media) {
+    container.textContent = "";
+    if (!media || !media.length) return false;
+
+    const grid = el("div", "media-grid");
+    media.forEach((m) => {
+      if (m.type === "image") {
+        const item = el("div", "media-item media-item--image");
+        const img = el("img");
+        img.src = m.src;
+        img.alt = m.alt || "";
+        img.loading = "lazy";
+        item.appendChild(img);
+        grid.appendChild(item);
+      } else if (m.type === "youtube") {
+        const id = youtubeId(m.id || m.url);
+        if (!id) return;
+        const item = el("div", "media-item media-item--embed");
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://www.youtube-nocookie.com/embed/${id}`;
+        iframe.title = m.title || "Project video";
+        iframe.loading = "lazy";
+        iframe.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        item.appendChild(iframe);
+        grid.appendChild(item);
+      } else if (m.type === "video") {
+        const item = el("div", "media-item media-item--embed");
+        const video = document.createElement("video");
+        video.src = m.src;
+        video.controls = true;
+        video.preload = "metadata";
+        if (m.poster) video.poster = m.poster;
+        item.appendChild(video);
+        grid.appendChild(item);
+      }
+    });
+
+    container.appendChild(grid);
+    return grid.childNodes.length > 0;
+  }
+
+  // Create the single reusable modal once; returns { open, close }.
+  function buildProjectModal() {
+    const backdrop = el("div", "modal-backdrop");
+    const modal = el("div", "modal");
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-labelledby", "project-modal-title");
+
+    const closeBtn = el("button", "modal-close");
+    closeBtn.setAttribute("aria-label", "Close");
+    closeBtn.textContent = "×"; // ×
+
+    const scroll = el("div", "modal-scroll");
+    const head = el("div", "modal-head");
+    const badge = el("span", "modal-badge");
+    const title = el("h3", "modal-title");
+    title.id = "project-modal-title";
+    const role = el("p", "modal-role");
+    const time = el("span", "modal-time");
+    head.append(badge, title, role, time);
+
+    const summary = el("p", "modal-summary");
+    const highlights = el("ul", "modal-highlights");
+    const tech = el("div", "modal-tech");
+    const media = el("div", "modal-media");
+    const links = el("div", "modal-links");
+
+    const body = el("div", "modal-body");
+    body.append(summary, highlights, tech, media, links);
+    scroll.append(head, body);
+    modal.append(closeBtn, scroll);
+    backdrop.appendChild(modal);
+    document.body.appendChild(backdrop);
+
+    let lastFocused = null;
+
+    function show(node, on) {
+      node.style.display = on ? "" : "none";
+    }
+
+    function onKey(e) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        close();
+      } else if (e.key === "Tab") {
+        const focusable = [...modal.querySelectorAll('a[href], button, iframe, video, [tabindex]:not([tabindex="-1"])')]
+          .filter((n) => n.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    function open(project, trigger) {
+      lastFocused = trigger || document.activeElement;
+
+      badge.textContent = project.badge || "";
+      show(badge, !!project.badge);
+      title.textContent = project.title;
+      role.textContent = project.role || "";
+      show(role, !!project.role);
+      time.textContent = project.timeframe || "";
+      show(time, !!project.timeframe);
+      summary.textContent = project.summary || "";
+
+      highlights.textContent = "";
+      if (project.highlights && project.highlights.length) {
+        project.highlights.forEach((h) => highlights.appendChild(el("li", null, h)));
+      }
+      show(highlights, !!(project.highlights && project.highlights.length));
+
+      tech.textContent = "";
+      if (project.tech && project.tech.length) tech.appendChild(chipList(project.tech, "chip-list"));
+      show(tech, !!(project.tech && project.tech.length));
+
+      show(media, renderMedia(media, project.media));
+
+      links.textContent = "";
+      if (project.links && project.links.length) {
+        project.links.forEach((link) => {
+          const a = el("a", "card-link", link.label);
+          a.href = link.url;
+          a.target = "_blank";
+          a.rel = "noreferrer noopener";
+          links.appendChild(a);
+        });
+      }
+      show(links, !!(project.links && project.links.length));
+
+      scroll.scrollTop = 0;
+      document.body.classList.add("modal-open");
+      backdrop.classList.add("is-open");
+      document.addEventListener("keydown", onKey);
+      closeBtn.focus();
+    }
+
+    function close() {
+      backdrop.classList.remove("is-open");
+      document.body.classList.remove("modal-open");
+      media.textContent = ""; // tear down iframes/videos so audio stops
+      document.removeEventListener("keydown", onKey);
+      const returnTo = lastFocused;
+      lastFocused = null;
+      if (returnTo && typeof returnTo.focus === "function") returnTo.focus();
+    }
+
+    closeBtn.addEventListener("click", close);
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) close();
+    });
+
+    return { open, close };
+  }
+
+  let projectModalApi = null;
+  function openProject(project, trigger) {
+    if (projectModalApi) projectModalApi.open(project, trigger);
+  }
+
   /* ---------- hero + header ---------- */
 
   function renderHero() {
@@ -99,12 +278,30 @@
         a.href = link.url;
         a.target = "_blank";
         a.rel = "noreferrer noopener";
+        a.addEventListener("click", (e) => e.stopPropagation()); // follow the link, don't open the modal
         linkRow.appendChild(a);
       });
       body.appendChild(linkRow);
     }
 
+    body.appendChild(el("span", "card-more", "View details →"));
+
     card.appendChild(body);
+
+    // The whole card opens the project's detail modal.
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-haspopup", "dialog");
+    card.setAttribute("aria-label", `View details for ${project.title}`);
+    card.addEventListener("click", () => openProject(project, card));
+    card.addEventListener("keydown", (e) => {
+      if (e.target !== card) return; // ignore keys from inner links
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openProject(project, card);
+      }
+    });
+
     return card;
   }
 
@@ -269,6 +466,7 @@
 
   /* ---------- boot ---------- */
 
+  projectModalApi = buildProjectModal(); // must exist before cards are wired
   renderHero();
   renderProjects();
   renderExperience();

@@ -166,9 +166,9 @@ const PROJECTS = [
    {
     id: "ARVI",
     category: "university",
-    badge: "MR",
     title: "ARVI — Autonomus Robotic Virtual Intelligence",
     image: "public/Images/ARVI.jpg",
+    badge: "MR",
     role: "MR Developer",
     summary:
       "A mixed reality AI companion, built for our Sixth semester project, that interacts with the user in their physical space. The project explores how AI can be integrated into the identity of the AVRD course, creating a virtual friend that responds to the user's environment and actions. Answering questions, providing information, and engaging in playful interactions, the AI companion enhances the user's experience of mixed reality.",

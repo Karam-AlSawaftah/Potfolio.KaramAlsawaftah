@@ -40,9 +40,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* warm ambient glow so the dark canvas doesn't feel flat */
+/* warm ambient glow + a soft vignette so the dark canvas reads as deep, not flat */
 body {
   background-image:
+    radial-gradient(135% 125% at 50% 42%, transparent 56%, rgba(0, 0, 0, 0.55) 100%),
     radial-gradient(1000px 600px at 85% -10%, rgba(247, 213, 102, 0.14), transparent 60%),
     radial-gradient(800px 600px at -15% 35%, rgba(216, 68, 51, 0.16), transparent 60%),
     radial-gradient(900px 700px at 50% 115%, rgba(247, 213, 102, 0.1), transparent 55%);
@@ -483,10 +484,19 @@ section.block {
   font-size: 2rem;
   color: var(--red);
 }
-.card-art-img {
+/* thumbnail cards: real photo fills the frame, no placeholder gradient/starburst */
+.card-art--image {
   height: 170px;
-  object-fit: cover;
+  background: var(--bg-raise);
+}
+.card-art--image::after {
+  content: none;
+}
+.card-art-img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .card-art-badge {
   position: absolute;
@@ -538,30 +548,15 @@ section.block {
   letter-spacing: 0.05em;
 }
 
+/* Card teaser: clamp to a few lines with a trailing "…"; full text is in the modal */
 .card-summary {
   color: var(--text-dim);
   font-size: 0.92rem;
-}
-
-.card-highlights {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  font-size: 0.89rem;
-  color: var(--text);
-}
-.card-highlights li {
-  padding-left: 20px;
-  position: relative;
-}
-.card-highlights li::before {
-  content: "✱";
-  position: absolute;
-  left: 0;
-  font-size: 0.7em;
-  top: 0.35em;
-  color: var(--red);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .chip-list {
@@ -1012,35 +1007,92 @@ body.modal-open {
   gap: 18px;
 }
 
-/* media gallery — images stack full-width, videos keep a 16:9 frame */
-.media-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+/* media slideshow — one item at a time, arrows + dots, fixed 16:9 frame */
+.carousel {
+  position: relative;
 }
-.media-item {
+.carousel-viewport {
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  overflow: hidden;
-  background: var(--bg-raise);
+  background: #000;
 }
-.media-item--image img {
+.carousel-track {
+  display: flex;
+  transition: transform 0.35s ease;
+}
+.carousel-slide {
+  flex: 0 0 100%;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+.carousel-slide--image img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain; /* show the whole image, letterboxed if needed */
   display: block;
 }
-.media-item--embed {
-  position: relative;
-  aspect-ratio: 16 / 9;
-}
-.media-item--embed iframe,
-.media-item--embed video {
-  position: absolute;
-  inset: 0;
+.carousel-slide--embed iframe,
+.carousel-slide--embed video {
   width: 100%;
   height: 100%;
   border: 0;
   display: block;
+  background: #000;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  line-height: 1;
+  color: var(--yellow);
+  background: rgba(12, 13, 17, 0.72);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.carousel-prev { left: 10px; }
+.carousel-next { right: 10px; }
+.carousel-arrow:hover {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 14px;
+}
+.carousel-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--yellow);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.carousel-dot:hover {
+  transform: scale(1.25);
+}
+.carousel-dot.is-active {
+  background: var(--yellow);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1050,6 +1102,9 @@ body.modal-open {
   }
   .modal {
     transform: none;
+  }
+  .carousel-track {
+    transition: none;
   }
 }
 

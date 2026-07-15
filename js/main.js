@@ -43,47 +43,117 @@
     return m ? m[1] : "";
   }
 
-  // Build the media gallery for a project. Returns true if anything was added.
+  // Build one media slide (image / youtube / video). Returns the node or null.
+  function buildMediaSlide(m) {
+    if (m.type === "image") {
+      const slide = el("div", "carousel-slide carousel-slide--image");
+      const img = el("img");
+      img.src = m.src;
+      img.alt = m.alt || "";
+      img.loading = "lazy";
+      slide.appendChild(img);
+      return slide;
+    }
+    if (m.type === "youtube") {
+      const id = youtubeId(m.id || m.url);
+      if (!id) return null;
+      const slide = el("div", "carousel-slide carousel-slide--embed");
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}`;
+      iframe.title = m.title || "Project video";
+      iframe.loading = "lazy";
+      iframe.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      slide.appendChild(iframe);
+      return slide;
+    }
+    if (m.type === "video") {
+      const slide = el("div", "carousel-slide carousel-slide--embed");
+      const video = document.createElement("video");
+      video.src = m.src;
+      video.controls = true;
+      video.preload = "metadata";
+      if (m.poster) video.poster = m.poster;
+      slide.appendChild(video);
+      return slide;
+    }
+    return null;
+  }
+
+  // Stop any playback on a slide (so leaving it silences audio).
+  function stopSlide(slide) {
+    if (!slide) return;
+    const video = slide.querySelector("video");
+    if (video) video.pause();
+    const iframe = slide.querySelector("iframe");
+    if (iframe) iframe.src = iframe.src; // reassigning reloads → stops YouTube playback
+  }
+
+  // Build the media slideshow for a project. Returns true if anything was added.
   function renderMedia(container, media) {
     container.textContent = "";
     if (!media || !media.length) return false;
 
-    const grid = el("div", "media-grid");
-    media.forEach((m) => {
-      if (m.type === "image") {
-        const item = el("div", "media-item media-item--image");
-        const img = el("img");
-        img.src = m.src;
-        img.alt = m.alt || "";
-        img.loading = "lazy";
-        item.appendChild(img);
-        grid.appendChild(item);
-      } else if (m.type === "youtube") {
-        const id = youtubeId(m.id || m.url);
-        if (!id) return;
-        const item = el("div", "media-item media-item--embed");
-        const iframe = document.createElement("iframe");
-        iframe.src = `https://www.youtube-nocookie.com/embed/${id}`;
-        iframe.title = m.title || "Project video";
-        iframe.loading = "lazy";
-        iframe.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-        iframe.allowFullscreen = true;
-        item.appendChild(iframe);
-        grid.appendChild(item);
-      } else if (m.type === "video") {
-        const item = el("div", "media-item media-item--embed");
-        const video = document.createElement("video");
-        video.src = m.src;
-        video.controls = true;
-        video.preload = "metadata";
-        if (m.poster) video.poster = m.poster;
-        item.appendChild(video);
-        grid.appendChild(item);
-      }
-    });
+    const slides = media.map(buildMediaSlide).filter(Boolean);
+    if (!slides.length) return false;
 
-    container.appendChild(grid);
-    return grid.childNodes.length > 0;
+    const carousel = el("div", "carousel");
+    const viewport = el("div", "carousel-viewport");
+    const track = el("div", "carousel-track");
+    slides.forEach((s) => track.appendChild(s));
+    viewport.appendChild(track);
+    carousel.appendChild(viewport);
+
+    // Single item needs no navigation.
+    if (slides.length > 1) {
+      carousel.tabIndex = 0;
+      carousel.setAttribute("role", "group");
+      carousel.setAttribute("aria-roledescription", "carousel");
+      carousel.setAttribute("aria-label", "Project media");
+
+      const prev = el("button", "carousel-arrow carousel-prev");
+      prev.setAttribute("aria-label", "Previous image");
+      prev.textContent = "‹";
+      const next = el("button", "carousel-arrow carousel-next");
+      next.setAttribute("aria-label", "Next image");
+      next.textContent = "›";
+
+      const dots = el("div", "carousel-dots");
+      const dotBtns = slides.map((_, i) => {
+        const d = el("button", "carousel-dot");
+        d.setAttribute("aria-label", `Go to item ${i + 1} of ${slides.length}`);
+        dots.appendChild(d);
+        return d;
+      });
+
+      let index = 0;
+      function go(target, stopCurrent) {
+        const n = slides.length;
+        const ni = ((target % n) + n) % n; // wrap around
+        if (stopCurrent !== false && ni !== index) stopSlide(slides[index]);
+        index = ni;
+        track.style.transform = `translateX(-${index * 100}%)`;
+        dotBtns.forEach((d, di) => {
+          const on = di === index;
+          d.classList.toggle("is-active", on);
+          d.setAttribute("aria-current", on ? "true" : "false");
+        });
+      }
+
+      prev.addEventListener("click", () => go(index - 1));
+      next.addEventListener("click", () => go(index + 1));
+      dotBtns.forEach((d, i) => d.addEventListener("click", () => go(i)));
+      carousel.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") { e.preventDefault(); go(index - 1); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); go(index + 1); }
+      });
+
+      carousel.append(prev, next, dots);
+      go(0, false);
+    }
+
+    container.appendChild(carousel);
+    return true;
   }
 
   // Create the single reusable modal once; returns { open, close }.
@@ -242,11 +312,15 @@
     card.id = project.id;
 
     if (project.image) {
-      const img = el("img", "card-art card-art-img");
+      // Wrap the thumbnail so the badge can overlay it (same as placeholder art).
+      const art = el("div", "card-art card-art--image");
+      const img = el("img", "card-art-img");
       img.src = project.image;
       img.alt = project.title;
       img.loading = "lazy";
-      card.appendChild(img);
+      art.appendChild(img);
+      art.appendChild(el("span", "card-art-badge", project.badge || "XR"));
+      card.appendChild(art);
     } else {
       card.appendChild(placeholderArt(project, index));
     }
@@ -259,13 +333,8 @@
     body.appendChild(top);
 
     if (project.role) body.appendChild(el("p", "card-role", project.role));
+    // Card shows a clamped teaser only; the full summary + highlights live in the modal.
     body.appendChild(el("p", "card-summary", project.summary));
-
-    if (project.highlights && project.highlights.length) {
-      const ul = el("ul", "card-highlights");
-      project.highlights.forEach((h) => ul.appendChild(el("li", null, h)));
-      body.appendChild(ul);
-    }
 
     if (project.tech && project.tech.length) {
       body.appendChild(chipList(project.tech, "chip-list"));

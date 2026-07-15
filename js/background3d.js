@@ -250,6 +250,60 @@ for (let i = 0; i < CONFIG.duckCount; i++) {
   scene.add(duck);
 }
 
+/* ---------- dust motes (atmospheric depth behind the ducks) ----------
+   A field of soft points spread through depth. Fog fades the far ones into
+   the background and size-attenuation shrinks them, so the flat backdrop
+   reads as deep space rather than a solid colour. */
+function makeDustSprite() {
+  const c = document.createElement("canvas");
+  c.width = c.height = 64;
+  const ctx = c.getContext("2d");
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, "rgba(255,255,255,1)");
+  g.addColorStop(0.4, "rgba(255,255,255,0.45)");
+  g.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 64, 64);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+const DUST = {
+  count: reducedMotion ? 240 : 460,
+  spreadX: 44,
+  spreadY: 28,
+  depth: [-15, 3], // z range — behind, among and just in front of the flock
+  spin: reducedMotion ? 0.004 : 0.012, // radians/sec, barely perceptible swirl
+};
+
+const dust = (() => {
+  const positions = new Float32Array(DUST.count * 3);
+  for (let i = 0; i < DUST.count; i++) {
+    positions[i * 3 + 0] = rand(-DUST.spreadX / 2, DUST.spreadX / 2);
+    positions[i * 3 + 1] = rand(-DUST.spreadY / 2, DUST.spreadY / 2);
+    positions[i * 3 + 2] = rand(DUST.depth[0], DUST.depth[1]);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  const mat = new THREE.PointsMaterial({
+    size: 0.13,
+    map: makeDustSprite(),
+    color: 0xfff1cf, // warm, matching the site's palette
+    transparent: true,
+    opacity: 0.5,
+    depthWrite: false, // faint motes shouldn't occlude the ducks
+    blending: THREE.AdditiveBlending,
+    sizeAttenuation: true,
+    fog: true,
+  });
+  const points = new THREE.Points(geo, mat);
+  points.layers.set(BACK_LAYER); // behind the page, never on the front canvas
+  points.renderOrder = -1;
+  return points;
+})();
+scene.add(dust);
+
 /* ---------- input: cursor + scroll ---------- */
 
 const mouseNDC = new THREE.Vector2(10, 10); // offscreen until first move
@@ -490,6 +544,10 @@ function tick() {
 
   scrollImpulse *= 0.6; // impulse fades quickly after the scroll stops
 
+  // dust drifts: a slow swirl plus a gentle vertical sway keeps it alive
+  dust.rotation.z += DUST.spin * dt;
+  dust.position.y = Math.sin(t * 0.06) * 0.6;
+
   // soft camera parallax toward the mouse
   camera.position.x += (mouseNDC.x * CONFIG.parallax - camera.position.x) * 0.03;
   camera.position.y += (mouseNDC.y * CONFIG.parallax - camera.position.y) * 0.03;
@@ -515,4 +573,4 @@ frontRenderer.render(scene, camera);
 tick();
 
 // debug handle (harmless in production)
-window.__bg3d = { scene, camera, backRenderer, frontRenderer, ducks, CONFIG };
+window.__bg3d = { scene, camera, backRenderer, frontRenderer, ducks, dust, CONFIG };

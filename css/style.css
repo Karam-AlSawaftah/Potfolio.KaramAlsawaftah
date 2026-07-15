@@ -5,15 +5,15 @@
    ============================================================ */
 :root {
   --bg: #0c0d11;
-  --bg-raise: #121318;
-  --bg-card: #101116;
-  --line: #24262e;
-  --yellow: #f2d168;
-  --yellow-bright: #f7dd85;
-  --red: #bf3226;
-  --red-soft: rgba(191, 50, 38, 0.16);
-  --text: #f2d168;
-  --text-dim: #b3a06a;
+  --bg-raise: #181920;
+  --bg-card: #14151b;
+  --line: #2c2e38;
+  --yellow: #f7d566;
+  --yellow-bright: #ffe58a;
+  --red: #d84433;
+  --red-soft: rgba(216, 68, 51, 0.2);
+  --text: #f7e6ad;
+  --text-dim: #d6c797;
   --max-width: 1100px;
   --radius: 6px;
   --font-display: "Archivo Black", "Arial Black", sans-serif;
@@ -38,6 +38,15 @@ body {
   font-size: 16px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+}
+
+/* warm ambient glow so the dark canvas doesn't feel flat */
+body {
+  background-image:
+    radial-gradient(1000px 600px at 85% -10%, rgba(247, 213, 102, 0.14), transparent 60%),
+    radial-gradient(800px 600px at -15% 35%, rgba(216, 68, 51, 0.16), transparent 60%),
+    radial-gradient(900px 700px at 50% 115%, rgba(247, 213, 102, 0.1), transparent 55%);
+  background-attachment: fixed;
 }
 
 /* red edge bar — signature motif from the PDF */
@@ -113,7 +122,7 @@ code {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(12, 13, 17, 0.92);
+  background: rgba(12, 13, 17, 0.9);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
@@ -358,9 +367,9 @@ section.block {
 }
 .pill:hover {
   text-decoration: none;
-  border-color: var(--red);
-  background: var(--red-soft);
-  color: var(--yellow-bright);
+  border-color: var(--yellow);
+  background: var(--yellow);
+  color: #131313;
 }
 
 .project-group + .project-group {
@@ -403,14 +412,15 @@ section.block {
 .project-card:hover {
   transform: translateY(-4px);
   border-color: var(--red);
+  box-shadow: 0 12px 36px rgba(216, 68, 51, 0.22);
 }
 
 .card-art {
-  height: 150px;
+  height: 160px;
   position: relative;
   background:
-    radial-gradient(130% 170% at 12% 0%, hsla(var(--art-hue), 72%, 52%, 0.5), transparent 55%),
-    radial-gradient(130% 170% at 92% 115%, hsla(calc(var(--art-hue) - 20), 80%, 42%, 0.45), transparent 58%),
+    radial-gradient(130% 170% at 12% 0%, hsla(var(--art-hue), 88%, 58%, 0.85), transparent 62%),
+    radial-gradient(130% 170% at 92% 115%, hsla(calc(var(--art-hue) - 25), 90%, 48%, 0.75), transparent 64%),
     var(--bg-raise);
 }
 /* faint red starburst on every placeholder */
@@ -696,9 +706,9 @@ section.block {
    CONTACT — "Let's Create Together"
    ============================================================ */
 .contact-card {
-  border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--bg-card);
+  background: var(--yellow);
+  color: #1d160a;
   padding: 44px;
   display: flex;
   flex-wrap: wrap;
@@ -723,8 +733,25 @@ section.block {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  color: var(--text);
+  color: #1d160a;
   font-size: 0.98rem;
+  position: relative;
+  z-index: 1;
+}
+.contact-info a {
+  color: #1d160a;
+}
+.contact-card .btn-primary {
+  background: #0c0d11;
+  border-color: #0c0d11;
+  color: var(--yellow);
+  position: relative;
+  z-index: 1;
+}
+.contact-card .btn-primary:hover {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
 }
 .contact-info > * {
   padding-left: 26px;

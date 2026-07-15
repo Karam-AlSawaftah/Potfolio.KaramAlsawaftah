@@ -11,7 +11,8 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
-const DUCK_MODEL = "public/models/bobby.glb";
+
+const DUCK_MODEL = "public/models/bobby.gltf";
 
 const CONFIG = {
   duckCount: 24,
@@ -100,12 +101,33 @@ scene.add(rim);
 // duck if the GLB can't load.
 let duckTemplate = null;
 try {
-  const gltf = await new GLTFLoader().loadAsync(DUCK_MODEL);
+  const loader = new GLTFLoader();
+
+  const gltf = await loader.loadAsync(DUCK_MODEL);
   const model = gltf.scene;
-  const sphere = new THREE.Box3().setFromObject(model).getBoundingSphere(new THREE.Sphere());
+
+  // Ensure all texture maps use the proper color space
+  model.traverse((obj) => {
+    if (!obj.isMesh) return;
+
+    obj.material = obj.material.clone();
+
+    if (obj.material.map) {
+      obj.material.map.colorSpace = THREE.SRGBColorSpace;
+    }
+
+    obj.material.needsUpdate = true;
+  });
+
+  const sphere = new THREE.Box3()
+    .setFromObject(model)
+    .getBoundingSphere(new THREE.Sphere());
+
   const s = 1 / sphere.radius;
+
   model.scale.setScalar(s);
   model.position.copy(sphere.center).multiplyScalar(-s);
+
   duckTemplate = model;
 } catch (err) {
   console.warn("Duck model failed to load — using primitive ducks instead", err);

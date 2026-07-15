@@ -14,7 +14,7 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 const DUCK_MODEL = "public/models/bobby.glb";
 
 const CONFIG = {
-  duckCount: 12,
+  duckCount: 24,
   depth: [-8, 1], // z range (camera sits at z = 14)
   swim: 0.5, // wandering force strength
   buoyancy: 0.35, // gentle bobbing force

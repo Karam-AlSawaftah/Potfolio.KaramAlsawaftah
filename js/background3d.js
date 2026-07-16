@@ -210,7 +210,7 @@ function boundsAt(z) {
   return { halfW: halfH * safeAspect(), halfH };
 }
 
-for (let i = 0; i < CONFIG.duckCount; i++) {
+function spawnDuck() {
   const duck = makeDuck();
   const scale = rand(0.45, 1.05);
   duck.scale.setScalar(scale);
@@ -250,6 +250,18 @@ for (let i = 0; i < CONFIG.duckCount; i++) {
   scene.add(duck);
 }
 
+for (let i = 0; i < CONFIG.duckCount; i++) spawnDuck();
+
+// Secret-mode API: grow or shrink the flock live. Removed ducks share the
+// template's geometry/materials, so plain scene.remove is enough — and the
+// count is never persisted, so a reload always returns to CONFIG.duckCount.
+function setDuckCount(n) {
+  n = Math.max(1, Math.min(300, Math.round(n) || CONFIG.duckCount));
+  while (ducks.length > n) scene.remove(ducks.pop());
+  while (ducks.length < n) spawnDuck();
+  return ducks.length;
+}
+
 /* ---------- dust motes (atmospheric depth behind the ducks) ----------
    A field of soft points spread through depth. Fog fades the far ones into
    the background and size-attenuation shrinks them, so the flat backdrop
@@ -274,8 +286,16 @@ const DUST = {
   spreadX: 44,
   spreadY: 28,
   depth: [-15, 3], // z range — behind, among and just in front of the flock
-  spin: reducedMotion ? 0.004 : 0.012, // radians/sec, barely perceptible swirl
+  swim: reducedMotion ? 0.06 : 0.16, // gentle wandering drift
+  mouseRadius: 3.0, // world-space reach of the cursor push
+  mouseForce: reducedMotion ? 8 : 20, // lighter than the ducks — motes scatter, not launch
+  scrollFactor: 0.9, // dust rides the scroll slightly lighter than the ducks
+  damping: 0.8,
+  maxSpeed: reducedMotion ? 1.5 : 5,
 };
+
+const dustVel = new Float32Array(DUST.count * 3); // per-mote velocity
+const dustSeed = new Float32Array(DUST.count); // per-mote wander phase
 
 const dust = (() => {
   const positions = new Float32Array(DUST.count * 3);
@@ -283,6 +303,7 @@ const dust = (() => {
     positions[i * 3 + 0] = rand(-DUST.spreadX / 2, DUST.spreadX / 2);
     positions[i * 3 + 1] = rand(-DUST.spreadY / 2, DUST.spreadY / 2);
     positions[i * 3 + 2] = rand(DUST.depth[0], DUST.depth[1]);
+    dustSeed[i] = rand(0, 100);
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -303,6 +324,91 @@ const dust = (() => {
   return points;
 })();
 scene.add(dust);
+
+// Per-mote physics: the same forces the ducks feel — wandering drift, cursor
+// push, scroll drag — just lighter. No collisions, and positions wrap at the
+// field edges so a big cursor shove never empties the scene.
+function updateDust(t, dt) {
+  const pos = dust.geometry.attributes.position.array;
+  const damp = Math.max(0, 1 - DUST.damping * dt);
+  const hx = DUST.spreadX / 2;
+  const hy = DUST.spreadY / 2;
+  const zMin = DUST.depth[0];
+  const zMax = DUST.depth[1];
+  const zSpan = zMax - zMin;
+
+  let ox, oy, oz, rdx, rdy, rdz; // mouse ray origin + direction
+  if (mouseActive) {
+    raycaster.setFromCamera(mouseNDC, camera);
+    ox = raycaster.ray.origin.x;
+    oy = raycaster.ray.origin.y;
+    oz = raycaster.ray.origin.z;
+    rdx = raycaster.ray.direction.x;
+    rdy = raycaster.ray.direction.y;
+    rdz = raycaster.ray.direction.z;
+  }
+
+  for (let i = 0; i < DUST.count; i++) {
+    const ix = i * 3;
+    let px = pos[ix], py = pos[ix + 1], pz = pos[ix + 2];
+    let vx = dustVel[ix], vy = dustVel[ix + 1], vz = dustVel[ix + 2];
+    const s = dustSeed[i];
+
+    // wandering drift (per-mote pseudo-noise, like the ducks' swim)
+    vx += Math.sin(t * 0.29 + s) * DUST.swim * dt;
+    vy += Math.sin(t * 0.23 + s * 1.7) * DUST.swim * 0.7 * dt;
+    vz += Math.sin(t * 0.17 + s * 0.6) * DUST.swim * 0.5 * dt;
+
+    // cursor push: distance from the mouse ray, at any depth
+    if (mouseActive) {
+      const wx = px - ox, wy = py - oy, wz = pz - oz;
+      const along = wx * rdx + wy * rdy + wz * rdz;
+      const rx = wx - rdx * along, ry = wy - rdy * along, rz = wz - rdz * along;
+      const dist = Math.hypot(rx, ry, rz);
+      if (dist < DUST.mouseRadius && dist > 0.001) {
+        const falloff = 1 - dist / DUST.mouseRadius;
+        const f = (DUST.mouseForce * falloff * falloff * dt) / dist;
+        vx += rx * f;
+        vy += ry * f;
+        vz += rz * f;
+      }
+    }
+
+    // scroll drag — same impulse the ducks receive
+    vy += scrollImpulse * DUST.scrollFactor;
+
+    // drag + speed cap
+    vx *= damp;
+    vy *= damp;
+    vz *= damp;
+    const sp = Math.hypot(vx, vy, vz);
+    if (sp > DUST.maxSpeed) {
+      const k = DUST.maxSpeed / sp;
+      vx *= k;
+      vy *= k;
+      vz *= k;
+    }
+
+    // integrate + wrap
+    px += vx * dt;
+    py += vy * dt;
+    pz += vz * dt;
+    if (px > hx) px -= DUST.spreadX;
+    else if (px < -hx) px += DUST.spreadX;
+    if (py > hy) py -= DUST.spreadY;
+    else if (py < -hy) py += DUST.spreadY;
+    if (pz > zMax) pz -= zSpan;
+    else if (pz < zMin) pz += zSpan;
+
+    pos[ix] = px;
+    pos[ix + 1] = py;
+    pos[ix + 2] = pz;
+    dustVel[ix] = vx;
+    dustVel[ix + 1] = vy;
+    dustVel[ix + 2] = vz;
+  }
+  dust.geometry.attributes.position.needsUpdate = true;
+}
 
 /* ---------- input: cursor + scroll ---------- */
 
@@ -544,9 +650,8 @@ function tick() {
 
   scrollImpulse *= 0.6; // impulse fades quickly after the scroll stops
 
-  // dust drifts: a slow swirl plus a gentle vertical sway keeps it alive
-  dust.rotation.z += DUST.spin * dt;
-  dust.position.y = Math.sin(t * 0.06) * 0.6;
+  // dust shares the ducks' 3D space and forces (wander / cursor / scroll)
+  updateDust(t, dt);
 
   // soft camera parallax toward the mouse
   camera.position.x += (mouseNDC.x * CONFIG.parallax - camera.position.x) * 0.03;
@@ -572,5 +677,5 @@ camera.layers.set(FRONT_LAYER);
 frontRenderer.render(scene, camera);
 tick();
 
-// debug handle (harmless in production)
-window.__bg3d = { scene, camera, backRenderer, frontRenderer, ducks, dust, CONFIG };
+// debug handle + secret-mode API (harmless in production)
+window.__bg3d = { scene, camera, backRenderer, frontRenderer, ducks, dust, CONFIG, setDuckCount };

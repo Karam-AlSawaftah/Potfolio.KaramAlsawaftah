@@ -303,6 +303,19 @@
       }
       linksWrap.appendChild(a);
     });
+
+    // Portrait beside the name (only when data.js provides one)
+    if (SITE.portrait) {
+      const inner = $(".hero-inner");
+      const wrap = el("div", "hero-portrait");
+      const img = el("img");
+      img.src = SITE.portrait;
+      img.alt = `Portrait of ${SITE.name}`;
+      img.addEventListener("error", () => wrap.remove()); // missing file → clean fallback
+      wrap.appendChild(img);
+      inner.appendChild(wrap);
+      inner.classList.add("hero-inner--portrait");
+    }
   }
 
   /* ---------- projects ---------- */
@@ -533,9 +546,114 @@
     });
   }
 
+  /* ---------- super secret mode ----------
+     A tiny button in the bottom corner. Click it three times to open a dev
+     panel: live FPS readout + a duck-count slider. Nothing persists — the
+     duck count returns to the default on any reload. */
+
+  function setupSecretMode() {
+    const btn = el("button", "secret-btn", "super secret button");
+    btn.setAttribute("aria-haspopup", "true");
+    document.body.appendChild(btn);
+
+    // panel
+    const panel = el("div", "secret-panel");
+    panel.appendChild(el("p", "secret-title", "✱ Secret Mode"));
+
+    const fpsRow = el("div", "secret-row");
+    fpsRow.appendChild(el("span", "secret-label", "FPS"));
+    const fpsVal = el("span", "secret-value", "—");
+    fpsRow.appendChild(fpsVal);
+    panel.appendChild(fpsRow);
+
+    const duckRow = el("div", "secret-row");
+    duckRow.appendChild(el("span", "secret-label", "Ducks"));
+    const duckVal = el("span", "secret-value", "—");
+    duckRow.appendChild(duckVal);
+    panel.appendChild(duckRow);
+
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.className = "secret-slider";
+    slider.min = "1";
+    slider.max = "200";
+    slider.step = "1";
+    slider.setAttribute("aria-label", "Number of ducks");
+    panel.appendChild(slider);
+
+    panel.appendChild(el("p", "secret-note", "duck count resets on reload"));
+    document.body.appendChild(panel);
+
+    // live FPS meter — runs only while the panel is open
+    let rafId = null;
+    let frames = 0;
+    let lastStamp = 0;
+    function fpsLoop(now) {
+      frames++;
+      if (now - lastStamp >= 500) {
+        fpsVal.textContent = Math.round((frames * 1000) / (now - lastStamp));
+        frames = 0;
+        lastStamp = now;
+      }
+      rafId = requestAnimationFrame(fpsLoop);
+    }
+
+    function syncDucks() {
+      const api = window.__bg3d; // set by background3d.js (absent if WebGL is off)
+      if (api && api.ducks) {
+        slider.disabled = false;
+        slider.value = String(api.ducks.length);
+        duckVal.textContent = String(api.ducks.length);
+      } else {
+        slider.disabled = true;
+        duckVal.textContent = "3D off";
+      }
+    }
+
+    function setOpen(open) {
+      panel.classList.toggle("is-open", open);
+      if (open) {
+        syncDucks();
+        frames = 0;
+        lastStamp = performance.now();
+        fpsVal.textContent = "—";
+        rafId = requestAnimationFrame(fpsLoop);
+      } else if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    }
+
+    slider.addEventListener("input", () => {
+      const api = window.__bg3d;
+      if (!api || !api.setDuckCount) return;
+      duckVal.textContent = String(api.setDuckCount(Number(slider.value)));
+    });
+
+    // three clicks unlock; after that the button just toggles the panel
+    let clicks = 0;
+    let resetTimer = null;
+    let unlocked = false;
+    btn.addEventListener("click", () => {
+      if (unlocked) {
+        setOpen(!panel.classList.contains("is-open"));
+        return;
+      }
+      clicks++;
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(() => (clicks = 0), 1500); // too slow? start over
+      if (clicks >= 3) {
+        unlocked = true;
+        btn.textContent = "✱ secret mode";
+        setOpen(true);
+      }
+    });
+  }
+
   /* ---------- boot ---------- */
 
   projectModalApi = buildProjectModal(); // must exist before cards are wired
+  setupSecretMode();
   renderHero();
   renderProjects();
   renderExperience();

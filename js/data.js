@@ -8,6 +8,8 @@ const SITE = {
   name: "Karam Alsawaftah",
   role: "XR Developer",
   location: "Dieburg, Germany",
+  // Portrait shown beside your name in the hero — remove the line to hide it.
+  portrait: "public/Images/Me_image.jpg",
   tagline:
     "Building immersive VR, AR and MR experiences — from shaders and real-time visuals to gameplay and spatial interaction.",
   summary:

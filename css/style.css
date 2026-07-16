@@ -253,6 +253,53 @@ code {
   max-width: 100%;
 }
 
+/* hero with a portrait: text left, photo right */
+.hero-inner--portrait {
+  display: flex;
+  align-items: center;
+  gap: 44px;
+}
+.hero-text {
+  flex: 1;
+  min-width: 0;
+}
+.hero-portrait {
+  flex-shrink: 0;
+  position: relative;
+  /* size the wrapper, not the img — the global `img { max-width: 100% }`
+     rule makes an img-driven width collapse (circular sizing) */
+  width: clamp(160px, 20vw, 240px);
+}
+.hero-portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 2px solid var(--yellow);
+  border-radius: var(--radius);
+  position: relative;
+  z-index: 1;
+}
+/* offset red block behind the photo — print-poster style, like the PDF */
+.hero-portrait::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translate(12px, 12px);
+  background: var(--red);
+  border-radius: var(--radius);
+}
+.hero-portrait::after {
+  content: "✱";
+  position: absolute;
+  top: -16px;
+  left: -14px;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--red);
+  z-index: 2;
+}
+
 .hero h1 {
   font-size: clamp(2.6rem, 7.5vw, 5rem);
   color: var(--yellow);
@@ -1118,6 +1165,98 @@ body.modal-open {
 }
 
 /* ============================================================
+   SUPER SECRET BUTTON + PANEL
+   ============================================================ */
+.secret-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 12px;
+  z-index: 60; /* above the front duck canvas (40) and header (50) */
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  opacity: 0.45;
+  cursor: pointer;
+  transition: opacity 0.2s, color 0.2s;
+}
+.secret-btn:hover {
+  opacity: 1;
+  color: var(--yellow);
+}
+
+.secret-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 44px;
+  z-index: 60;
+  width: 236px;
+  padding: 16px 18px;
+  background: rgba(18, 19, 25, 0.72);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+}
+.secret-panel.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.secret-title {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--yellow);
+  margin-bottom: 12px;
+}
+.secret-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.secret-label {
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+.secret-value {
+  color: var(--yellow);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.secret-slider {
+  width: 100%;
+  margin: 6px 0 4px;
+  accent-color: var(--red);
+  cursor: pointer;
+}
+.secret-slider:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.secret-note {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+/* ============================================================
    REVEAL ANIMATION
    ============================================================ */
 .reveal {
@@ -1189,6 +1328,15 @@ body.modal-open {
   .hero::after {
     font-size: 3.4rem;
     bottom: 4%;
+  }
+  /* portrait stacks above the name on small screens */
+  .hero-inner--portrait {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 30px;
+  }
+  .hero-portrait {
+    width: 150px;
   }
   section.block {
     padding: 62px 0;

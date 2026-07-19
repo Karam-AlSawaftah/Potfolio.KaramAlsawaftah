@@ -22,7 +22,7 @@ const SITE = {
   // Add or remove social links freely — they render automatically.
   links: [
     { label: "Email", url: "mailto:Karamali3050@gmail.com" },
-    { label: "GitHub", url: "https://github.com/KaramAlsawaftah" },
+    { label: "GitHub", url: "https://github.com/Karam-Alsawaftah" },
     { label: "itch.io", url: "https://karam-alsawaftah.itch.io/" },
   ],
 };

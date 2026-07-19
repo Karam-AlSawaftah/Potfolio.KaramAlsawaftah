@@ -17,7 +17,7 @@ const SITE = {
   contact: {
     email: "Karamali3050@gmail.com",
     phone: "+49 157 51752870",
-    address: "Altheimer Str. 134205, 64807 Dieburg, Germany",
+    address: "Altheimer Str. 34205, 64807 Dieburg, Germany",
   },
   // Add or remove social links freely — they render automatically.
   links: [

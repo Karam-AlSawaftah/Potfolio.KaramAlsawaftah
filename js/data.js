@@ -179,9 +179,13 @@ const PROJECTS = [
       "made use of passthrough and spatial awareness to create a more immersive and interactive experience",
     ],
     tech: ["Unity", "Mixed Reality", "Passthrough", "OpenXR"],
-    links: [],
+    links: [{
+        label: "Watch the Trailer",
+        url: "https://youtu.be/5-wy2LQBra0?si=IZQnGaoxLJqkGC4P",
+      },],
     media: [
-      { type: "image",   src: "public/Images/ARVI.jpg", alt: "ARVI Poster" },
+      { type: "image",   src: "public/Images/ARVI.jpg", alt: "ARVI Poster"},
+      { type: "youtube", url: "https://youtu.be/5-wy2LQBra0?si=IZQnGaoxLJqkGC4P", title: "ARVI Trailer" }
     ],
   },
   {

@@ -283,7 +283,7 @@ const EXPERIENCE = [
     company: "Go360",
     url: "https://www.go360.cz/",
     role: "Technical Artist",
-    period: "February 2025 — Present",
+    period: "February 2025 — 2026",
     description:
       "Full-service xR creative studio (Prague / Munich) with 48+ immersive projects for brands like DHL, Deutsche Telekom and Harley-Davidson. Working on 'The Blu: Expedition Taiwan', a free-roam VR experience co-produced by VIVERSE, Wevr and Taiwan's Ministry of Culture.",
     points: [

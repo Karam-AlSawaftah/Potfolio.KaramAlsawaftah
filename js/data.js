@@ -185,7 +185,8 @@ const PROJECTS = [
       },],
     media: [
       { type: "image",   src: "public/Images/ARVI.jpg", alt: "ARVI Poster"},
-      { type: "youtube", url: "https://youtu.be/5-wy2LQBra0?si=IZQnGaoxLJqkGC4P", title: "ARVI Trailer" }
+      { type: "youtube", url: "https://youtu.be/5-wy2LQBra0?si=IZQnGaoxLJqkGC4P", title: "ARVI Trailer" },
+      { type: "video", src: "public/Videos/ARVI_Interactions.mp4", title: "ARVI Interactions" }
     ],
   },
   {

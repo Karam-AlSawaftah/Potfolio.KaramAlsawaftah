@@ -279,6 +279,15 @@ const PROJECTS = [
    EXPERIENCE
    ------------------------------------------------------------ */
 const EXPERIENCE = [
+    {
+    company: "Human Factors Lab H_da",
+    url: "https://design.h-da.de/forschung/human-factors-lab",
+    role: "Research Assistant/Lab Supervisor",
+    period: "October 2026 - Present",
+    description:
+      "The Human Factors Lab in the Department of Design at Hochschule Darmstadt researches digital technologies and their use in human needs related contexts. Ergonomics, usability engineering, user experience design and human-robot collaboration are disciplines related to human cognitive and physical characteristics.",
+      
+  },
   {
     company: "Go360",
     url: "https://www.go360.cz/",
@@ -291,6 +300,7 @@ const EXPERIENCE = [
       "Produced and optimized 3D assets, including modeling and rigging",
     ],
   },
+
 ];
 
 /* ------------------------------------------------------------
